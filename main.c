@@ -32,6 +32,7 @@ int main(){
         }
         argv[i] = NULL;
 
+        //built in commands
         if (argv[0] == NULL) { // no command
             continue;
         }else if(strcmp(argv[0], "exit") == 0){
