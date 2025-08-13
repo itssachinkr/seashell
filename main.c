@@ -19,7 +19,22 @@ int main(){
         if(strcmp(line, "exit") == 0){
             break;
         }else{
-            printf("command not found: %s\n", line);
+            char *argv[100];
+            char *token;
+            int i = 0;
+
+            token = strtok(line, " ");
+            while(token != NULL){
+                argv[i] = token;
+                i++;
+                token = strtok(NULL, " ");
+            }
+            argv[i] = NULL;
+            printf("Command: %s\n", argv[0]);
+            for(int j=1; j<i; j++){
+                printf("Argument %d: %s\n", j, argv[j]);
+            }
+
         }
     }
     free(line);
