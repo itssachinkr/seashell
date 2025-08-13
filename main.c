@@ -56,6 +56,13 @@ int main(){
                 if(chdir(getenv("HOME")) != 0){
                     perror("cd");
                 }
+            } else if(argv[1][0] == '~'){
+                char extended_path[1024];
+                strcpy(extended_path, getenv("HOME"));
+                strcat(extended_path, argv[1]+1);
+                if(chdir(extended_path) != 0){
+                    perror(extended_path);
+                }
             }else{
                 if(chdir(argv[1]) != 0){
                     perror(argv[1]);
