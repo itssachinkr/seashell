@@ -19,28 +19,51 @@ int main(){
             break;
         }
         line[strcspn(line, "\n")] = 0;
-        if(strcmp(line, "exit") == 0){
+        // parsing the command
+        char *argv[100];
+        char *token;
+        int i = 0;
+
+        token = strtok(line, " ");
+        while(token != NULL){
+            argv[i] = token;
+            i++;
+            token = strtok(NULL, " ");
+        }
+        argv[i] = NULL;
+
+        if (argv[0] == NULL) { // no command
+            continue;
+        }else if(strcmp(argv[0], "exit") == 0){
             break;
+        }else if(strcmp(argv[0], "pwd") == 0){
+            char cwd[1024];
+            if(getcwd(cwd, sizeof(cwd)) != NULL){
+                printf("%s\n", cwd);
+            }else{
+                perror("getcwd() error");
+            }
+        }else if(strcmp(argv[0], "echo") == 0){
+            for(int j=1; argv[j]!=NULL; j++){
+                printf("%s", argv[j]);
+                if(argv[j+1]!=NULL){
+                    printf(" ");
+                }
+            }
+            printf("\n");
+        }else if(strcmp(argv[0], "cd") == 0){
+            if(argv[1] == NULL){
+                if(chdir(getenv("HOME")) != 0){
+                    perror("cd");
+                }
+            }else{
+                if(chdir(argv[1]) != 0){
+                    perror(argv[1]);
+                }
+            }
+        
         }else{
-            // parsing the command
-            char *argv[100];
-            char *token;
-            int i = 0;
-
-            token = strtok(line, " ");
-            while(token != NULL){
-                argv[i] = token;
-                i++;
-                token = strtok(NULL, " ");
-            }
-            argv[i] = NULL;
-
-            // empty command
-            if (argv[0] == NULL) {
-                continue;
-            }
             pid_t pid = fork();  // sys call to create a new process, duplicating the calling process
-            // printf("pid: %d\n", pid);
             if(pid < 0){
                 // forking failed
                 perror("fork"); // fun to print sys call errors
@@ -53,7 +76,6 @@ int main(){
             }else{
                 int status;
                 waitpid(pid, &status, 0); // status - child process info, 0 - default beh, exit when child ends
-                printf("This is the parent process. I created a child with PID: %d\n", pid);
             }
         }
     }
